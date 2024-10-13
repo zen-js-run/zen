@@ -2,7 +2,7 @@
 FROM rust:latest AS builder
 
 # Set the working directory
-WORKDIR /usr/src/zix
+WORKDIR /usr/src/Zen
 
 # Copy the Cargo.toml and Cargo.lock files
 COPY Cargo.toml Cargo.lock ./
@@ -26,10 +26,10 @@ RUN cargo build --release --target x86_64-pc-windows-gnu
 FROM debian:bullseye-slim AS runtime
 
 # Copy the built Linux binary from the builder stage
-COPY --from=builder /usr/src/zix/target/x86_64-unknown-linux-gnu/release/zix /usr/local/bin/zix-linux
+COPY --from=builder /usr/src/Zen/target/x86_64-unknown-linux-gnu/release/Zen /usr/local/bin/Zen-linux
 
 # Copy the built Windows binary from the builder stage (if needed)
-COPY --from=builder /usr/src/zix/target/x86_64-pc-windows-gnu/release/zix.exe /usr/local/bin/zix.exe
+COPY --from=builder /usr/src/Zen/target/x86_64-pc-windows-gnu/release/Zen.exe /usr/local/bin/Zen.exe
 
 # Set the entry point for the Linux binary
-ENTRYPOINT ["zix-linux"]
+ENTRYPOINT ["Zen-linux"]

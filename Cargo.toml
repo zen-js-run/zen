@@ -7,3 +7,17 @@ edition = "2021"
 colored = "2.1.0"
 deno_core = "0.311.0"
 tokio = { version = "1.40.0", features = ["full"] }
+
+[profile.release]
+opt-level = "z"  # Optimize for maximum speed (considered even more aggressive than "s")
+lto = "fat"      # Full Link-Time Optimization for overall optimization
+codegen-units = 1  # Single codegen unit for better optimization across the entire crate
+panic = "abort"   # Abort on panic to minimize overhead
+strip = "symbols"   # Keep all symbols for better debugging and profiling (optional, remove if needed)
+overflow-checks = false  # Disable integer overflow checks for speed
+debug = false     # Disable debug information
+rpath = false     # Disable runtime search paths
+inline-threshold = 512  # Increase inline threshold to allow aggressive inlining
+target-cpu = "native"  # Optimize for the current CPU architecture
+debug-assertions = false  # Disable debug assertions
+unwind = "none"  # Disable unwinding, which can add overhead
