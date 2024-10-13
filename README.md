@@ -9,6 +9,7 @@ Zen is a high-performance JavaScript runtime built in Rust. It executes code fas
 - Built using Rust for safety and performance
 - Multiple file execution and concurrency
 - Blazingly fast multithreading
+- Infinite amount of JS files to run concurrently
 
 ## Getting Started
 
@@ -46,6 +47,13 @@ You can run a JavaScript file using Zen with the following command:
 ```bash
 zen input.js
 ```
+Or run multiple files:
+
+```bash
+zen input.js input2.js input3.js
+```
+
+Zen can execute any amount of files you provide.
 
 ### Docker Setup
 
