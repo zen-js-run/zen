@@ -7,6 +7,8 @@ Zen is a high-performance JavaScript runtime built in Rust. It executes code fas
 - Fast execution of JavaScript code
 - Cross-platform support (Linux and Windows)
 - Built using Rust for safety and performance
+- Multiple file execution and concurrency
+- Blazingly fast multithreading
 
 ## Getting Started
 
