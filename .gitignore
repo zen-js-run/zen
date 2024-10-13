@@ -1,0 +1,42 @@
+# Ignore build directories
+/build
+/bin
+/obj
+/out
+/target
+
+# Ignore IDE config directories
+/.idea
+/.vscode
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore compiler-generated files
+*.o
+*.a
+*.so
+*.exe
+*.out
+*.dll
+*.dylib
+
+# Ignore dependency directories
+/.cache
+/vendor
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*.lock
+*.bak
+
+# Ignore core dumps
+core
+*.core
+
+# Ignore lockfiles
+*.lock
+Cargo.lock
