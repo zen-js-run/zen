@@ -29,13 +29,7 @@ To build and run Zen locally, follow these steps:
    cd Zen
    ```
 
-2. Build the project:
-
-   ```bash
-   cargo build --release
-   ```
-
-3. Install the project:
+2. Install the project:
     ```bash
     cargo install --path .
     ```
