@@ -136,14 +136,14 @@ impl Formatter {
             let mut current_line = String::new();
             for word in line.split_whitespace() {
                 if current_line.len() + word.len() + 1 > self.line_length {
-                    result.push_str(&current_line.trim());
+                    result.push_str(current_line.trim());
                     result.push('\n');
                     current_line.clear();
                 }
                 current_line.push_str(word);
                 current_line.push(' ');
             }
-            result.push_str(&current_line.trim());
+            result.push_str(current_line.trim());
             result.push('\n');
         }
         result
