@@ -25,7 +25,7 @@ To build and run Zen locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/Zen.git
+   git clone https://github.com/zen-js-run/zen.git
    cd Zen
    ```
 
