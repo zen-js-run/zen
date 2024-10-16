@@ -13,7 +13,7 @@ RUN mkdir src
 # Copy the source code
 COPY src ./src
 
-# Install required target (for example, x86_64-unknown-linux-gnu and x86_64-pc-windows-gnu)
+# Install required target
 RUN rustup target add x86_64-unknown-linux-gnu x86_64-pc-windows-gnu
 
 # Build the application for Linux
@@ -26,10 +26,10 @@ RUN cargo build --release --target x86_64-pc-windows-gnu
 FROM debian:bullseye-slim AS runtime
 
 # Copy the built Linux binary from the builder stage
-COPY --from=builder /usr/src/Zen/target/x86_64-unknown-linux-gnu/release/Zen /usr/local/bin/Zen-linux
+COPY --from=builder /usr/src/zen/target/x86_64-unknown-linux-gnu/release/zen /usr/local/bin/zen-linux
 
 # Copy the built Windows binary from the builder stage (if needed)
-COPY --from=builder /usr/src/Zen/target/x86_64-pc-windows-gnu/release/Zen.exe /usr/local/bin/Zen.exe
+COPY --from=builder /usr/src/zen/target/x86_64-pc-windows-gnu/release/zen.exe /usr/local/bin/zen.exe
 
 # Set the entry point for the Linux binary
-ENTRYPOINT ["Zen-linux"]
+ENTRYPOINT ["zen-linux"]

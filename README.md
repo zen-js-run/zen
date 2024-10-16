@@ -16,6 +16,7 @@ Zen is a high-performance JavaScript runtime built in Rust. It executes code fas
 ### Prerequisites
 
 - Git
+- Curl
 - [Rust](https://www.rust-lang.org/tools/install)
 - Docker (for containerization)
 
@@ -70,12 +71,12 @@ Zen can also be built and run using Docker. The provided Dockerfile allows you t
 
 The Dockerfile consists of two main stages:
 
-1. **Builder Stage**: 
+1. **Builder Stage**:
    - Uses the official Rust image to build the Zen application.
    - Copies the source code and required files.
    - Compiles the application for both Linux and Windows targets.
 
-2. **Runtime Stage**: 
+2. **Runtime Stage**:
    - Uses a minimal Debian image to run the application.
    - Copies the built binaries from the builder stage.
 

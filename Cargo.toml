@@ -6,7 +6,7 @@ build = "build.rs"
 
 [dependencies]
 colored = "2.1.0"
-deno_core = "0.313.0"
+deno_core = "0.314.0"
 tokio = { version = "1.40.0", features = ["full"] }
 regex = "1.11.0"
 url = "2.5.2"

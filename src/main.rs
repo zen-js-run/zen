@@ -59,6 +59,14 @@ async fn main() {
         return;
     }
 
+    let formatter = match Formatter::new() {
+        Ok(fmt) => fmt,
+        Err(e) => {
+            eprintln!("Error installing Dprint: {}", e.to_string().red().bold());
+            return;
+        }
+    };
+
     match command.as_str() {
         "run" => {
             let handles: Vec<_> = args[2..]
@@ -79,7 +87,6 @@ async fn main() {
             tasks::handle_task(&args[2]);
         }
         "fmt" => {
-            let formatter = Formatter::new(2, 80, fmt::QuoteStyle::Double, true);
             for file in &args[2..] {
                 match formatter.format_js(file) {
                     Ok(_) => println!("Formatted {}", file),
