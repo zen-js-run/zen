@@ -15,6 +15,7 @@ Zen is a high-performance JavaScript runtime built in Rust. It executes code fas
 
 ### Prerequisites
 
+- Git
 - [Rust](https://www.rust-lang.org/tools/install)
 - Docker (for containerization)
 
