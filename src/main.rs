@@ -2,12 +2,40 @@ mod runtime;
 mod init;
 mod tasks;
 mod fmt;
+mod wasm;
 
 use colored::Colorize;
-use std::{env, thread::{self, JoinHandle}};
+use std::thread::{self, JoinHandle};
 use tokio::runtime::Builder;
 use runtime::JsExecutor;
 use fmt::Formatter;
+use wasm::WasmExecutor; // Import WasmExecutor
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(name = "zen")]
+#[command(about = "A JavaScript runtime", long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Run {
+        files: Vec<String>,
+    },
+    Init,
+    Task {
+        name: String,
+    },
+    Fmt {
+        files: Vec<String>,
+    },
+    Wasm {
+        file: String,
+    },
+}
 
 fn execute_file(file_path: String) -> JoinHandle<Result<(), deno_core::error::AnyError>> {
     thread::spawn(move || {
@@ -20,82 +48,80 @@ fn execute_file(file_path: String) -> JoinHandle<Result<(), deno_core::error::An
     })
 }
 
-fn print_manual(command: &str) {
-    match command {
-        "run" => {
-            println!("{}", "Usage: zen run <file1.js> <file2.js> ...".green());
-            println!("Executes the specified JavaScript files.");
-        }
-        "init" => {
-            println!("{}", "Usage: zen init".green());
-            println!("Initializes a new project.");
-        }
-        "task" => {
-            println!("{}", "Usage: zen task <task_name>".green());
-            println!("Handles the specified task.");
-        }
-        "fmt" => {
-            println!("{}", "Usage: zen fmt <file1.js> <file2.js> ...".green());
-            println!("Formats the specified JavaScript files.");
-        }
-        _ => {
-            println!("{}", "Available commands: run, init, fmt, task".green());
-            println!("Use zen <command> for more information on a command.");
-        }
-    }
+fn execute_wasm(file_path: String) -> JoinHandle<Result<(), String>> {
+    thread::spawn(move || {
+        let executor = WasmExecutor::new();
+        executor.run(&file_path)
+    })
 }
 
 #[tokio::main]
 async fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
-        eprintln!("{}", "Usage: zen <command>".yellow().bold());
-        return;
-    }
+    let cli = Cli::parse();
 
-    let command: &String = &args[1];
-    if args.len() == 2 {
-        print_manual(command);
-        return;
-    }
+    match cli.command {
+        Commands::Run { files } => {
+            if files.is_empty() {
+                eprintln!("{}", "No files specified to run.".red());
+                return;
+            }
 
-    let formatter = match Formatter::new() {
-        Ok(fmt) => fmt,
-        Err(e) => {
-            eprintln!("Error installing Dprint: {}", e.to_string().red().bold());
-            return;
-        }
-    };
-
-    match command.as_str() {
-        "run" => {
-            let handles: Vec<_> = args[2..]
+            let handles: Vec<_> = files
                 .iter()
                 .map(|file| execute_file(file.to_string()))
                 .collect();
 
-            for handle in handles {
-                if let Err(error) = handle.join().unwrap() {
-                    eprintln!("Error executing file: {}", error.to_string().red().bold());
+            for (file, handle) in files.iter().zip(handles) {
+                match handle.join() {
+                    Ok(result) => {
+                        if let Err(error) = result {
+                            eprintln!("Error executing file {}: {}", file.red(), error.to_string().red().bold());
+                        } else {
+                            println!("Successfully executed file {}", file.green());
+                        }
+                    }
+                    Err(_) => {
+                        eprintln!("Thread for file {} panicked", file.red());
+                    }
                 }
             }
         }
-        "init" => {
+        Commands::Wasm { file } => {
+            let handle = execute_wasm(file);
+            match handle.join() {
+                Ok(result) => {
+                    if let Err(error) = result {
+                        eprintln!("Error executing WASM file {}: {}", file.red(), error.red().bold());
+                    } else {
+                        println!("Successfully executed WASM file {}", file.green());
+                    }
+                }
+                Err(_) => {
+                    eprintln!("Thread for WASM file {} panicked", file.red());
+                }
+            }
+        }
+        Commands::Init => {
             init::initialize_project();
         }
-        "task" => {
-            tasks::handle_task(&args[2]);
+        Commands::Task { name } => {
+            tasks::handle_task(&name);
         }
-        "fmt" => {
-            for file in &args[2..] {
-                match formatter.format_js(file) {
+        Commands::Fmt { files } => {
+            let formatter = match Formatter::new() {
+                Ok(fmt) => fmt,
+                Err(e) => {
+                    eprintln!("Error initializing formatter: {}", e.to_string().red().bold());
+                    return;
+                }
+            };
+
+            for file in files {
+                match formatter.format_js(&file) {
                     Ok(_) => println!("Formatted {}", file),
                     Err(e) => eprintln!("Error formatting file {}: {}", file, e.to_string().red().bold()),
                 }
             }
-        }
-        _ => {
-            eprintln!("{}", "Invalid command. Commands: Run, Init, Fmt, Task".red().bold());
         }
     }
 }
